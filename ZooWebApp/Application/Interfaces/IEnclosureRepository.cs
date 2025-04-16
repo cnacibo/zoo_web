@@ -1,0 +1,7 @@
+using ZooWebApp.Domain.Models;
+namespace ZooWebApp.Application.Interfaces;
+public interface IEnclosureRepository
+{
+    Task<Enclosure> GetByIdAsync(Guid id);
+    Task<IEnumerable<Enclosure>> GetAllAsync();
+    Task AddAsync(Enclosure enclosure);
