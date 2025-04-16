@@ -13,10 +13,12 @@ namespace ZooWebApp.Presentation.Controllers;
 public class AnimalsController : ControllerBase
 {
     private readonly IAnimalRepository _animalRepository;
+    private readonly IEnclosureRepository _enclosureRepository;
     
-    public AnimalsController(IAnimalRepository animalRepository)
+    public AnimalsController(IAnimalRepository animalRepository, IEnclosureRepository enclosureRepository)
     {
         _animalRepository = animalRepository;
+        _enclosureRepository = enclosureRepository;
     }
 
     [HttpGet]
@@ -45,6 +47,15 @@ public class AnimalsController : ControllerBase
         //     dto.FavoriteFood,
         //     dto.EnclosureId
         //     );
+
+         // Валидация модели
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var enclosureExists = await _enclosureRepository.ExistsAsync(request.EnclosureId);
+        if (!enclosureExists)
+            return BadRequest("Specified enclosure does not exist");
+
         if (!Enum.TryParse<Gender>(request.Gender, out var gender))
         {
             return BadRequest("Invalid gender value");

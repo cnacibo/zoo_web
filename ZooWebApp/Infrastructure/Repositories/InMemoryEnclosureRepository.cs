@@ -29,4 +29,10 @@ public class InMemoryEnclosureRepository : IEnclosureRepository{
         _enclosures.RemoveAll(e => e.Id == id);
         return Task.CompletedTask;
     }
+
+    public Task<bool> ExistsAsync(Guid enclosureId)
+    {
+        // Реализация проверки существования
+        return Task.FromResult(_enclosures.Any(e => e.Id == enclosureId));
+    }
 }

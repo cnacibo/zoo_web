@@ -7,4 +7,5 @@ public interface IEnclosureRepository
     Task AddAsync(Enclosure enclosure);
     Task UpdateAsync(Enclosure enclosure);
     Task DeleteAsync(Guid id);
+    Task<bool> ExistsAsync(Guid enclosureId);
 }
