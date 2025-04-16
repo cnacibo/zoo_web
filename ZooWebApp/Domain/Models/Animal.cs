@@ -1,3 +1,4 @@
+using ZooWebApp.Domain.ValueObjects;
 namespace ZooWebApp.Domain.Models;
 public class Animal
 {
@@ -5,13 +6,13 @@ public class Animal
     public string Species { get; private set; }
     public string Name { get; private set; }
     public DateTime BirthDate { get; private set; }
-    public string Gender { get; private set; }
-    public string FavoriteFood { get; private set; }
+    public Gender Gender { get; private set; }
+    public Food FavoriteFood { get; private set; }
     public bool IsHealthy { get; private set; }
     public Guid EnclosureId { get; private set; }
 
     public Animal(string species, string name, DateTime birthDate, 
-        string gender, string favoriteFood, Guid enclosureId)
+        Gender gender, Food favoriteFood, Guid enclosureId)
     {
         Id = Guid.NewGuid();
         Species = species;

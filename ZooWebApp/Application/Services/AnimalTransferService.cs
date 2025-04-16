@@ -6,9 +6,7 @@ public class AnimalTransferService
     private readonly IAnimalRepository  _animalRepository; 
     private readonly IEnclosureRepository _enclosureRepository;
 
-    public AnimalTransferService(
-        IAnimalRepository animalRepository,
-        IEnclosureRepository enclosureRepository)
+    public AnimalTransferService( IAnimalRepository animalRepository, IEnclosureRepository enclosureRepository)
     {
         _animalRepository = animalRepository;
         _enclosureRepository = enclosureRepository;

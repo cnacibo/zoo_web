@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using ZooWebApp.Application.Interfaces;
 using ZooWebApp.Infrastructure.Repositories;
+using ZooWebApp.Domain.ValueObjects;
 using ZooWebApp.Domain.Models;
+using System.ComponentModel.DataAnnotations;
 namespace ZooWebApp.Presentation.Controllers
 {
     [ApiController]
@@ -31,10 +33,14 @@ namespace ZooWebApp.Presentation.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateEnclosureRequest request)
+        public async Task<IActionResult> Create([FromForm] CreateEnclosureRequest request)
         {
+            if (!Enum.TryParse<EnclosureType>(request.Type, out var enclosureType))
+            {
+                return BadRequest("Invalid enclosure type value");
+            }
             var enclosure = new Enclosure(
-                request.Type,
+                enclosureType,
                 request.Size,
                 request.MaxAnimals);
 
@@ -60,8 +66,15 @@ namespace ZooWebApp.Presentation.Controllers
 
     public class CreateEnclosureRequest
     {
+        [Required(ErrorMessage = "Enclosure type is required")]
+        [EnumDataType(typeof(EnclosureType), ErrorMessage = "Invalid enclosure type")]
         public string Type { get; set; }
+
+        [Required(ErrorMessage = "Size is required")]
         public string Size { get; set; }
+
+        [Required(ErrorMessage = "Max animals is required")]
+        [Range(1, int.MaxValue, ErrorMessage = "Max animals must be at least 1")]
         public int MaxAnimals { get; set; }
     }
 }

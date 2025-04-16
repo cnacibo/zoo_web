@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using ZooWebApp.Application.Interfaces;
 using ZooWebApp.Application.Services;
 using ZooWebApp.Infrastructure.Repositories;
+using ZooWebApp.Domain.ValueObjects;
 
 namespace ZooWebApp.Presentation.Controllers
 {
@@ -45,10 +46,14 @@ namespace ZooWebApp.Presentation.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateFeedingScheduleRequest request)
         {
+            if (!Enum.TryParse<Food>(request.FoodType, out var food))
+            {
+                return BadRequest("Invalid favorite food value");
+            }
             await _feedingOrganizationService.ScheduleFeeding(
                 request.AnimalId,
                 request.FeedingTime,
-                request.FoodType);
+                food);
 
             return Ok();
         }
@@ -65,8 +70,12 @@ namespace ZooWebApp.Presentation.Controllers
         {
             var schedule = await _feedingScheduleRepository.GetByIdAsync(id);
             if (schedule == null) return NotFound();
+            if (!Enum.TryParse<Food>(request.FoodType, out var foodType))
+            {
+                return BadRequest("Invalid food type value");
+            }
 
-            schedule.UpdateSchedule(request.FeedingTime, request.FoodType);
+            schedule.UpdateSchedule(request.FeedingTime, foodType);
             await _feedingScheduleRepository.UpdateAsync(schedule);
 
             return Ok(schedule);

@@ -1,5 +1,6 @@
 using System;
 using ZooWebApp.Domain.Models;
+using ZooWebApp.Domain.ValueObjects;
 using ZooWebApp.Application.Interfaces;
 namespace ZooWebApp.Application.Services;
 public class FeedingOrganizationService
@@ -12,7 +13,7 @@ public class FeedingOrganizationService
         _feedingScheduleRepository = feedingScheduleRepository;
     }
 
-    public async Task ScheduleFeeding(Guid animalId, DateTime feedingTime, string foodType)
+    public async Task ScheduleFeeding(Guid animalId, DateTime feedingTime, Food foodType)
     {
         var schedule = new FeedingSchedule(animalId, feedingTime, foodType);
         await _feedingScheduleRepository.AddAsync(schedule);
@@ -22,8 +23,9 @@ public class FeedingOrganizationService
     public async Task CompleteFeeding(Guid scheduleId)
     {
         var schedule = await _feedingScheduleRepository.GetByIdAsync(scheduleId);
-        if (schedule == null)
+        if (schedule == null) {
             throw new ArgumentException("Feeding schedule not found");
+        }
 
         schedule.MarkAsCompleted();
         await _feedingScheduleRepository.UpdateAsync(schedule);

@@ -1,20 +1,20 @@
+using ZooWebApp.Domain.ValueObjects;
 namespace ZooWebApp.Domain.Models;
 public class Enclosure
 {
     public Guid Id { get; private set; }
-    public string Type { get; private set; }
+    public EnclosureType Type { get; private set; }
     public string Size { get; private set; }
     public int CurrentAnimals { get; private set; }
     public int MaxAnimals { get; private set; }
     public List<Guid> Animals { get; private set; }
 
-    public Enclosure(string type, string size, int maxAnimals)
+    public Enclosure(EnclosureType type, string size, int maxAnimals)
     {
         Id = Guid.NewGuid();
         Type = type;
         Size = size;
         MaxAnimals = maxAnimals;
-        // CurrentAnimals = currentAnimals;
         CurrentAnimals = 0;
         Animals = new List<Guid>();
     }
