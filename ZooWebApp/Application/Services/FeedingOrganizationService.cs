@@ -21,4 +21,11 @@ public class FeedingOrganizationService
 
     public async Task CompleteFeeding(Guid scheduleId)
     {
-        var schedule = await _feedingSchedule
+        var schedule = await _feedingScheduleRepository.GetByIdAsync(scheduleId);
+        if (schedule == null)
+            throw new ArgumentException("Feeding schedule not found");
+
+        schedule.MarkAsCompleted();
+        await _feedingScheduleRepository.UpdateAsync(schedule);
+    }
+}

@@ -90,4 +90,6 @@ namespace ZooWebApp.Presentation.Controllers
     public class UpdateFeedingScheduleRequest
     {
         public DateTime FeedingTime { get; set; }
-        public str
+        public string FoodType { get; set; }
+    }
+}

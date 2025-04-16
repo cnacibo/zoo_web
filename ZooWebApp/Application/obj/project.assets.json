@@ -1,11 +1,30 @@
 {
   "version": 3,
   "targets": {
-    "net8.0": {}
+    "net8.0": {
+      "Domain/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "compile": {
+          "bin/placeholder/Domain.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Domain.dll": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "Domain/1.0.0": {
+      "type": "project",
+      "path": "../Domain/Domain.csproj",
+      "msbuildProject": "../Domain/Domain.csproj"
+    }
+  },
   "projectFileDependencyGroups": {
-    "net8.0": []
+    "net8.0": [
+      "Domain >= 1.0.0"
+    ]
   },
   "packageFolders": {
     "/Users/mariia_vlasova/.nuget/packages/": {}
@@ -13,11 +32,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/mariia_vlasova/Desktop/uni_related/КПО/mini_hw_2/ZooWeb/ZooWebApp/ZooWebApp.Application/ZooWebApp.Application.csproj",
-      "projectName": "ZooWebApp.Application",
-      "projectPath": "/Users/mariia_vlasova/Desktop/uni_related/КПО/mini_hw_2/ZooWeb/ZooWebApp/ZooWebApp.Application/ZooWebApp.Application.csproj",
+      "projectUniqueName": "/Users/mariia_vlasova/Desktop/uni_related/КПО/mini_hw_2/ZooWeb/ZooWebApp/Application/Application.csproj",
+      "projectName": "Application",
+      "projectPath": "/Users/mariia_vlasova/Desktop/uni_related/КПО/mini_hw_2/ZooWeb/ZooWebApp/Application/Application.csproj",
       "packagesPath": "/Users/mariia_vlasova/.nuget/packages/",
-      "outputPath": "/Users/mariia_vlasova/Desktop/uni_related/КПО/mini_hw_2/ZooWeb/ZooWebApp/ZooWebApp.Application/obj/",
+      "outputPath": "/Users/mariia_vlasova/Desktop/uni_related/КПО/mini_hw_2/ZooWeb/ZooWebApp/Application/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/mariia_vlasova/.nuget/NuGet/NuGet.Config"
@@ -31,7 +50,11 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "/Users/mariia_vlasova/Desktop/uni_related/КПО/mini_hw_2/ZooWeb/ZooWebApp/Domain/Domain.csproj": {
+              "projectPath": "/Users/mariia_vlasova/Desktop/uni_related/КПО/mini_hw_2/ZooWeb/ZooWebApp/Domain/Domain.csproj"
+            }
+          }
         }
       },
       "warningProperties": {

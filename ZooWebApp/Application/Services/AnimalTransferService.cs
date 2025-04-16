@@ -35,4 +35,13 @@ public class AnimalTransferService
 
         
         currentEnclosure.RemoveAnimal(animal.Id);
-  
+        newEnclosure.AddAnimal(animal.Id);
+        animal.MoveToEnclosure(newEnclosure.Id);
+
+        await _animalRepository.UpdateAsync(animal);
+        await _enclosureRepository.UpdateAsync(newEnclosure);
+        await _enclosureRepository.UpdateAsync(currentEnclosure);
+
+        // _eventRepository.Publish(new AnimalMovedEvent(animalId, oldEnclosure.Id, newEnclosure.Id));
+    }
+}

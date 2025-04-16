@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <ItemGroup>
+  <!-- <ItemGroup>
     <ProjectReference Include="..\Presentation\Presentation.csproj" />
-  </ItemGroup>
+  </ItemGroup> -->
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>

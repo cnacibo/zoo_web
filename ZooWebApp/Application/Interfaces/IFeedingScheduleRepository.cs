@@ -7,3 +7,5 @@ public interface IFeedingScheduleRepository
     Task AddAsync(FeedingSchedule schedule);
     Task UpdateAsync(FeedingSchedule schedule);
     Task DeleteAsync(Guid id);
+    Task<IEnumerable<FeedingSchedule>> GetByAnimalIdAsync(Guid animalId);
+}

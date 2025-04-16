@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ZooWebApp.Application.Interfaces;
 using ZooWebApp.Infrastructure.Repositories;
-
+using ZooWebApp.Domain.Models;
 namespace ZooWebApp.Presentation.Controllers
 {
     [ApiController]

@@ -37,4 +37,5 @@ public class ZooStatistics
     public int SickAnimals { get; set; }
     public int TotalEnclosures { get; set; }
     public int FreeEnclosures { get; set; }
-    public 
+    public int AlmostFullEnclosures { get; set; }
+}

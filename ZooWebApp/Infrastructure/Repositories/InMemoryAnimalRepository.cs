@@ -33,4 +33,7 @@ public class InMemoryAnimalRepository : IAnimalRepository
 
     public Task DeleteAsync(Guid id)
     {
-        _animals.RemoveAll(a => a.Id == 
+        _animals.RemoveAll(a => a.Id == id);
+        return Task.CompletedTask;
+    }
+}
