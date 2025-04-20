@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using ZooWebApp.Application.Services;
-// using ZooWebApp.Domain.Models;
 using ZooWebApp.Domain.ValueObjects;
 using System.ComponentModel.DataAnnotations;
 using ZooWebApp.Presentation.DTO;
@@ -53,12 +52,12 @@ public class AnimalsController : ControllerBase
         }
         catch (InvalidOperationException ex)
         {
-            return BadRequest(ex.Message); // ошибки от сервиса (не найден вольер и т.д.)
+            return BadRequest(ex.Message); // не найден вольер
         }
     }
 
     [HttpPost("transfer")]
-    public async Task<IActionResult> TransferAnimal([FromBody] TransferAnimalRequest request)
+    public async Task<IActionResult> TransferAnimal([FromForm] TransferAnimalRequest request)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
@@ -70,16 +69,23 @@ public class AnimalsController : ControllerBase
         }
         catch (InvalidOperationException ex)
         {
-            return BadRequest(ex.Message); // например, не найдено животное или вольер
+            return BadRequest(ex.Message); // не найдено животное или вольер
         }
     }
 
-    // [HttpDelete("{id}")]
-    // public async Task<IActionResult> Delete(Guid id)
-    // {
-    //     await _animalRepository.DeleteAsync(id);
-    //     return NoContent();
-    // }
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        try
+        {
+            await _animalTransferService.RemoveAnimalAsync(id);
+            return NoContent(); // успешно
+        }
+        catch (InvalidOperationException ex)
+        {
+            return NotFound(ex.Message); // если животное или вольер не найдены
+        }
+    }
 }
 
 public class CreateAnimalRequest
