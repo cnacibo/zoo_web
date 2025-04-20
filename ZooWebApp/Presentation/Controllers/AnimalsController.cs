@@ -57,6 +57,23 @@ public class AnimalsController : ControllerBase
         }
     }
 
+    [HttpPost("transfer")]
+    public async Task<IActionResult> TransferAnimal([FromBody] TransferAnimalRequest request)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        try
+        {
+            await _animalTransferService.TransferAnimal(request.AnimalId, request.NewEnclosureId);
+            return Ok("Animal successfully transferred");
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message); // например, не найдено животное или вольер
+        }
+    }
+
     // [HttpDelete("{id}")]
     // public async Task<IActionResult> Delete(Guid id)
     // {
@@ -86,4 +103,13 @@ public class CreateAnimalRequest
 
     [Required(ErrorMessage = "EnclosureId is required")]
     public Guid EnclosureId { get; set; }
+}
+
+public class TransferAnimalRequest
+{
+    [Required]
+    public Guid AnimalId { get; set; }
+
+    [Required]
+    public Guid NewEnclosureId { get; set; }
 }
