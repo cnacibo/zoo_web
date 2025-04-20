@@ -44,7 +44,7 @@ namespace ZooWebApp.Presentation.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateFeedingScheduleRequest request)
+        public async Task<IActionResult> Create([FromForm] CreateFeedingScheduleRequest request)
         {
             if (!Enum.TryParse<Food>(request.FoodType, out var food))
             {
@@ -66,7 +66,7 @@ namespace ZooWebApp.Presentation.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody] UpdateFeedingScheduleRequest request)
+        public async Task<IActionResult> Update(Guid id, [FromForm] UpdateFeedingScheduleRequest request)
         {
             var schedule = await _feedingScheduleRepository.GetByIdAsync(id);
             if (schedule == null) return NotFound();

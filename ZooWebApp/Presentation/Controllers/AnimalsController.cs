@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using ZooWebApp.Application.Services;
 using ZooWebApp.Domain.ValueObjects;
 using System.ComponentModel.DataAnnotations;
-using ZooWebApp.Presentation.DTO;
 
 using ZooWebApp.Application.Interfaces;
 
@@ -46,14 +45,11 @@ public class AnimalsController : ControllerBase
             await _animalTransferService.AddAnimalAsync(request.Species, request.Name, request.BirthDate, request.Gender, request.FavoriteFood, request.EnclosureId);
             return Ok("Animal successfully added");
         }
-        catch (ArgumentException ex)
+        catch (Exception ex)
         {
-            return BadRequest(ex.Message); // ошибки от фабрики (enum парсинг)
+            return BadRequest(ex.Message); // ошибки 
         }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(ex.Message); // не найден вольер
-        }
+    
     }
 
     [HttpPost("transfer")]
