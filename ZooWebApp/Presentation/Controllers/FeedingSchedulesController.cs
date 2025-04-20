@@ -1,104 +1,93 @@
 using Microsoft.AspNetCore.Mvc;
 using ZooWebApp.Application.Interfaces;
-using ZooWebApp.Application.Services;
-using ZooWebApp.Infrastructure.Repositories;
-using ZooWebApp.Domain.ValueObjects;
+using System.ComponentModel.DataAnnotations;
 
-namespace ZooWebApp.Presentation.Controllers
+namespace ZooWebApp.Presentation.Controllers;
+[ApiController]
+[Route("api/[controller]")]
+public class FeedingSchedulesController : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class FeedingSchedulesController : ControllerBase
+    private readonly IFeedingScheduleRepository _feedingScheduleRepository;
+    private readonly IFeedingOrganizationService _feedingService;
+
+    public FeedingSchedulesController(IFeedingScheduleRepository feedingScheduleRepository,
+    IFeedingOrganizationService feedingOrganizationService)
     {
-        private readonly IFeedingScheduleRepository _feedingScheduleRepository;
-        private readonly FeedingOrganizationService _feedingOrganizationService;
+        _feedingScheduleRepository = feedingScheduleRepository;
+        _feedingService = feedingOrganizationService;
+    }
 
-        public FeedingSchedulesController(
-            IFeedingScheduleRepository feedingScheduleRepository,
-            FeedingOrganizationService feedingOrganizationService)
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var schedules = await _feedingScheduleRepository.GetAllAsync();
+        return Ok(schedules);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create([FromForm] CreateFeedingScheduleRequest request)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        try
         {
-            _feedingScheduleRepository = feedingScheduleRepository;
-            _feedingOrganizationService = feedingOrganizationService;
+            var id = await _feedingService.CreateFeedingScheduleAsync(request.AnimalId, request.FeedingTime, request.FoodType);
+            return Ok(new { Id = id });
         }
-
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
+        catch (Exception ex)
         {
-            var schedules = await _feedingScheduleRepository.GetAllAsync();
-            return Ok(schedules);
-        }
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(Guid id)
-        {
-            var schedule = await _feedingScheduleRepository.GetByIdAsync(id);
-            if (schedule == null) return NotFound();
-            return Ok(schedule);
-        }
-
-        [HttpGet("animal/{animalId}")]
-        public async Task<IActionResult> GetByAnimalId(Guid animalId)
-        {
-            var schedules = await _feedingScheduleRepository.GetByAnimalIdAsync(animalId);
-            return Ok(schedules);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Create([FromForm] CreateFeedingScheduleRequest request)
-        {
-            if (!Enum.TryParse<Food>(request.FoodType, out var food))
-            {
-                return BadRequest("Invalid favorite food value");
-            }
-            await _feedingOrganizationService.ScheduleFeeding(
-                request.AnimalId,
-                request.FeedingTime,
-                food);
-
-            return Ok();
-        }
-
-        [HttpPost("{id}/complete")]
-        public async Task<IActionResult> CompleteFeeding(Guid id)
-        {
-            await _feedingOrganizationService.CompleteFeeding(id);
-            return Ok();
-        }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, [FromForm] UpdateFeedingScheduleRequest request)
-        {
-            var schedule = await _feedingScheduleRepository.GetByIdAsync(id);
-            if (schedule == null) return NotFound();
-            if (!Enum.TryParse<Food>(request.FoodType, out var foodType))
-            {
-                return BadRequest("Invalid food type value");
-            }
-
-            schedule.UpdateSchedule(request.FeedingTime, foodType);
-            await _feedingScheduleRepository.UpdateAsync(schedule);
-
-            return Ok(schedule);
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
-        {
-            await _feedingScheduleRepository.DeleteAsync(id);
-            return NoContent();
+            return BadRequest(ex.Message);
         }
     }
 
-    public class CreateFeedingScheduleRequest
-    {
-        public Guid AnimalId { get; set; }
-        public DateTime FeedingTime { get; set; }
-        public string FoodType { get; set; }
+
+    [HttpPost("{id}/complete")]
+    public async Task<IActionResult> Complete(Guid id){
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+        try
+        {
+            await _feedingService.CompleteFeedingAsync(id);
+            return Ok("Feeding marked as completed");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
-    public class UpdateFeedingScheduleRequest
-    {
-        public DateTime FeedingTime { get; set; }
-        public string FoodType { get; set; }
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(Guid id){
+        try
+        {
+            await _feedingService.DeleteFeedingScheduleAsync(id);
+            return Ok("Feeding schedule deleted");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
+}
+
+public class CreateFeedingScheduleRequest
+{
+    [Required]
+    public Guid AnimalId { get; set; }
+
+    [Required]
+    public DateTime FeedingTime { get; set; }
+
+    [Required]
+    public string FoodType { get; set; }
+}
+
+public class UpdateFeedingScheduleRequest
+{
+    [Required]
+    public DateTime FeedingTime { get; set; }
+
+    [Required(ErrorMessage = "FoodType is required: Meat, Fish, Grass, Vegetables, Fruit")]
+    public string FoodType { get; set; }
 }

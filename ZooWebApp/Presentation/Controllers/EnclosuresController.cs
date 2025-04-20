@@ -1,80 +1,67 @@
 using Microsoft.AspNetCore.Mvc;
-using ZooWebApp.Application.Interfaces;
-using ZooWebApp.Infrastructure.Repositories;
-using ZooWebApp.Domain.ValueObjects;
-using ZooWebApp.Domain.Models;
 using System.ComponentModel.DataAnnotations;
-namespace ZooWebApp.Presentation.Controllers
+namespace ZooWebApp.Presentation.Controllers;
+
+using ZooWebApp.Application.Interfaces;
+
+[ApiController]
+[Route("api/[controller]")]
+public class EnclosuresController : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class EnclosuresController : ControllerBase
+    private readonly IAnimalTransferService _animalTransferService;
+    private readonly IEnclosureRepository _enclosureRepository;
+
+    public EnclosuresController(IAnimalTransferService animalTransferService, IEnclosureRepository enclosureRepository)
     {
-        private readonly IEnclosureRepository _enclosureRepository;
+        _animalTransferService = animalTransferService;   
+        _enclosureRepository = enclosureRepository;
+    }
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var enclosures = await _enclosureRepository.GetAllAsync();
+        return Ok(enclosures);
+    }
 
-        public EnclosuresController(IEnclosureRepository enclosureRepository)
+    [HttpPost]
+    public async Task<IActionResult> Create([FromForm] CreateEnclosureRequest request)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        try
         {
-            _enclosureRepository = enclosureRepository;
+            await _animalTransferService.AddEnclosureAsync(request.Type, request.Size, request.MaxAnimals);
+            return Ok("Enclosure successfully created");
         }
-
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
+        catch (Exception ex)
         {
-            var enclosures = await _enclosureRepository.GetAllAsync();
-            return Ok(enclosures);
-        }
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(Guid id)
-        {
-            var enclosure = await _enclosureRepository.GetByIdAsync(id);
-            if (enclosure == null) return NotFound();
-            return Ok(enclosure);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Create([FromForm] CreateEnclosureRequest request)
-        {
-            if (!Enum.TryParse<EnclosureType>(request.Type, out var enclosureType))
-            {
-                return BadRequest("Invalid enclosure type value");
-            }
-            var enclosure = new Enclosure(
-                enclosureType,
-                request.Size,
-                request.MaxAnimals);
-
-            await _enclosureRepository.AddAsync(enclosure);
-            return CreatedAtAction(nameof(GetById), new { id = enclosure.Id }, enclosure);
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
-        {
-            await _enclosureRepository.DeleteAsync(id);
-            return NoContent();
-        }
-
-        [HttpGet("free")]
-        public async Task<IActionResult> GetFreeEnclosures()
-        {
-            var enclosures = await _enclosureRepository.GetAllAsync();
-            var freeEnclosures = enclosures.Where(e => e.CurrentAnimals < e.MaxAnimals);
-            return Ok(freeEnclosures);
+            return BadRequest(ex.Message);
         }
     }
 
-    public class CreateEnclosureRequest
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(Guid id)
     {
-        [Required(ErrorMessage = "Enclosure type is required")]
-        [EnumDataType(typeof(EnclosureType), ErrorMessage = "Invalid enclosure type")]
-        public string Type { get; set; }
-
-        [Required(ErrorMessage = "Size is required")]
-        public string Size { get; set; }
-
-        [Required(ErrorMessage = "Max animals is required")]
-        [Range(1, int.MaxValue, ErrorMessage = "Max animals must be at least 1")]
-        public int MaxAnimals { get; set; }
+        try{
+            await _animalTransferService.RemoveEnclosureAsync(id);
+            return Ok("Enclosure successfully deleted");
+        }
+        catch(Exception ex){
+            return BadRequest(ex.Message);
+        }
+        
     }
+}
+
+public class CreateEnclosureRequest{
+    [Required]
+    public string Type { get; set; }
+
+    [Required]
+    public string Size { get; set; }
+
+    [Required]
+    [Range(1, int.MaxValue, ErrorMessage = "Max animals must be at least 1")]
+    public int MaxAnimals { get; set; }
 }

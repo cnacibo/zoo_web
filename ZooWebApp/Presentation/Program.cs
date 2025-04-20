@@ -12,10 +12,12 @@ builder.Services.AddSingleton<IEnclosureRepository, InMemoryEnclosureRepository>
 builder.Services.AddSingleton<IFeedingScheduleRepository, InMemoryFeedingScheduleRepository>();
 
 // Register services
-builder.Services.AddScoped<AnimalTransferService>();
-builder.Services.AddScoped<FeedingOrganizationService>();
-builder.Services.AddScoped<ZooStatisticsService>();
+builder.Services.AddScoped<IAnimalTransferService, AnimalTransferService>();
+builder.Services.AddScoped<IFeedingOrganizationService, FeedingOrganizationService>();
+builder.Services.AddScoped<IZooStatisticsService, ZooStatisticsService>();
 builder.Services.AddScoped<IAnimalFactory, AnimalFactory>();
+builder.Services.AddScoped<IEnclosureFactory, EnclosureFactory>();
+builder.Services.AddScoped<IFeedingScheduleFactory, FeedingScheduleFactory>();
 
 
 // Add Swagger

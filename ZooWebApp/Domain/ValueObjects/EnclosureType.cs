@@ -3,7 +3,5 @@ public enum EnclosureType
 {
     Predator,
     Herbivore,
-    Bird,
-    Aquarium,
-    Reptile
+    Birds
 }

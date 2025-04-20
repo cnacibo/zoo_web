@@ -12,14 +12,14 @@ public class AnimalFactory : IAnimalFactory
         }
 
         if (!Enum.TryParse<Gender>(gender, out var parsedGender)) {
-            throw new ArgumentException("Invalid gender");
+            throw new ArgumentException("Invalid gender: Male, Female");
         }
         if (birthDate > DateTime.UtcNow) {
             throw new ArgumentException("Birth date cannot be in the future");
         }
 
         if (!Enum.TryParse<Food>(favoriteFood, out var parsedFood))
-            throw new ArgumentException("Invalid favorite food");
+            throw new ArgumentException("Invalid favorite food: Meat, Fish, Grass, Vegetables, Fruit");
 
 
         return new Animal(

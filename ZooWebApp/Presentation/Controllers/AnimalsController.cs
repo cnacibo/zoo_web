@@ -1,8 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using ZooWebApp.Application.Services;
-using ZooWebApp.Domain.ValueObjects;
 using System.ComponentModel.DataAnnotations;
-
 using ZooWebApp.Application.Interfaces;
 
 namespace ZooWebApp.Presentation.Controllers;
@@ -10,10 +7,10 @@ namespace ZooWebApp.Presentation.Controllers;
 [Route("api/[controller]")]
 public class AnimalsController : ControllerBase
 {
-    private readonly AnimalTransferService _animalTransferService;
+    private readonly IAnimalTransferService _animalTransferService;
     private readonly IAnimalRepository _animalRepository;
     
-    public AnimalsController(AnimalTransferService animalTransferService, IAnimalRepository animalRepository)
+    public AnimalsController(IAnimalTransferService animalTransferService, IAnimalRepository animalRepository)
     {
         _animalTransferService = animalTransferService;
          _animalRepository = animalRepository;
@@ -63,7 +60,7 @@ public class AnimalsController : ControllerBase
             await _animalTransferService.TransferAnimal(request.AnimalId, request.NewEnclosureId);
             return Ok("Animal successfully transferred");
         }
-        catch (InvalidOperationException ex)
+        catch (Exception ex)
         {
             return BadRequest(ex.Message); // не найдено животное или вольер
         }
@@ -77,7 +74,7 @@ public class AnimalsController : ControllerBase
             await _animalTransferService.RemoveAnimalAsync(id);
             return NoContent(); // успешно
         }
-        catch (InvalidOperationException ex)
+        catch (Exception ex)
         {
             return NotFound(ex.Message); // если животное или вольер не найдены
         }
@@ -86,24 +83,22 @@ public class AnimalsController : ControllerBase
 
 public class CreateAnimalRequest
 {
-    [Required(ErrorMessage = "Species is required")]
+    [Required]
     public string Species { get; set; }
 
-     [Required(ErrorMessage = "Name is required")]
+    [Required]
     public string Name { get; set; }
 
-    [Required(ErrorMessage = "BirthDate is required")]
+    [Required]
     public DateTime BirthDate { get; set; }
 
-    [Required(ErrorMessage = "Gender is required")]
-    [EnumDataType(typeof(Gender), ErrorMessage = "Invalid Gender")]
+    [Required]
     public string Gender { get; set; }
 
-    [Required(ErrorMessage = "FavoriteFood is required")]
-    [EnumDataType(typeof(Food), ErrorMessage = "Invalid FavoriteFood")]
+    [Required]
     public string FavoriteFood { get; set; }
 
-    [Required(ErrorMessage = "EnclosureId is required")]
+    [Required]
     public Guid EnclosureId { get; set; }
 }
 

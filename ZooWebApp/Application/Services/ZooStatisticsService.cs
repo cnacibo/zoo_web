@@ -1,6 +1,9 @@
 using ZooWebApp.Application.Interfaces;
+using ZooWebApp.Application.DTO;
+
 namespace ZooWebApp.Application.Services;
-public class ZooStatisticsService
+
+public class ZooStatisticsService : IZooStatisticsService
 {
     private readonly IAnimalRepository _animalRepository;
     private readonly IEnclosureRepository _enclosureRepository;
@@ -18,24 +21,25 @@ public class ZooStatisticsService
         var animals = await _animalRepository.GetAllAsync();
         var enclosures = await _enclosureRepository.GetAllAsync();
 
+        var availableSpaceEnclosures = enclosures
+            .Where(e => e.CurrentAnimals < e.MaxAnimals)
+            .Select(e => new EnclosureInfo
+            {
+                Id = e.Id,
+                CurrentAnimals = e.CurrentAnimals,
+                MaxAnimals = e.MaxAnimals
+            })
+            .ToList();
+
         return new ZooStatistics
         {
             TotalAnimals = animals.Count(),
             HealthyAnimals = animals.Count(a => a.IsHealthy),
             SickAnimals = animals.Count(a => !a.IsHealthy),
             TotalEnclosures = enclosures.Count(),
-            FreeEnclosures = enclosures.Count(e => e.CurrentAnimals == 0),
-            AlmostFullEnclosures = enclosures.Count(e => e.CurrentAnimals >= e.MaxAnimals * 0.8)
+            EnclosuresWithAvailableSpace = availableSpaceEnclosures,
         };
     }
 }
 
-public class ZooStatistics
-{
-    public int TotalAnimals { get; set; }
-    public int HealthyAnimals { get; set; }
-    public int SickAnimals { get; set; }
-    public int TotalEnclosures { get; set; }
-    public int FreeEnclosures { get; set; }
-    public int AlmostFullEnclosures { get; set; }
-}
+
