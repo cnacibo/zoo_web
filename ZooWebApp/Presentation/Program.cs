@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using ZooWebApp.Application.Interfaces;
 using ZooWebApp.Application.Services;
 using ZooWebApp.Infrastructure.Repositories;
-using ZooWebApp.Domain.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
@@ -16,6 +15,8 @@ builder.Services.AddSingleton<IFeedingScheduleRepository, InMemoryFeedingSchedul
 builder.Services.AddScoped<AnimalTransferService>();
 builder.Services.AddScoped<FeedingOrganizationService>();
 builder.Services.AddScoped<ZooStatisticsService>();
+builder.Services.AddScoped<IAnimalFactory, AnimalFactory>();
+
 
 // Add Swagger
 builder.Services.AddEndpointsApiExplorer();

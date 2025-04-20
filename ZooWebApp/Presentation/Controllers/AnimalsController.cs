@@ -1,24 +1,24 @@
 using Microsoft.AspNetCore.Mvc;
-using ZooWebApp.Application.Interfaces;
-using ZooWebApp.Infrastructure.Repositories;
-using ZooWebApp.Domain.Models;
+using ZooWebApp.Application.Services;
+// using ZooWebApp.Domain.Models;
 using ZooWebApp.Domain.ValueObjects;
-using ZooWebApp.Application.Commands;
-using ZooWebApp.Presentation.DTO;
 using System.ComponentModel.DataAnnotations;
+using ZooWebApp.Presentation.DTO;
+
+using ZooWebApp.Application.Interfaces;
 
 namespace ZooWebApp.Presentation.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 public class AnimalsController : ControllerBase
 {
+    private readonly AnimalTransferService _animalTransferService;
     private readonly IAnimalRepository _animalRepository;
-    private readonly IEnclosureRepository _enclosureRepository;
     
-    public AnimalsController(IAnimalRepository animalRepository, IEnclosureRepository enclosureRepository)
+    public AnimalsController(AnimalTransferService animalTransferService, IAnimalRepository animalRepository)
     {
-        _animalRepository = animalRepository;
-        _enclosureRepository = enclosureRepository;
+        _animalTransferService = animalTransferService;
+         _animalRepository = animalRepository;
     }
 
     [HttpGet]
@@ -28,63 +28,41 @@ public class AnimalsController : ControllerBase
         return Ok(animals);
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(Guid id)
-    {
-        var animal = await _animalRepository.GetByIdAsync(id);
-        if (animal == null) return NotFound();
-        return Ok(animal);
-    }
+    // [HttpGet("{id}")]
+    // public async Task<IActionResult> GetById(Guid id)
+    // {
+    //     var animal = await _animalRepository.GetByIdAsync(id);
+    //     if (animal == null) return NotFound();
+    //     return Ok(animal);
+    // }
 
     [HttpPost]
     public async Task<IActionResult> Create([FromForm] CreateAnimalRequest request)
     {
-        // var command = new AddAnimalCommand(
-        //     dto.Species,
-        //     dto.Name,
-        //     dto.BirthDate,
-        //     dto.Gender,
-        //     dto.FavoriteFood,
-        //     dto.EnclosureId
-        //     );
-
-         // Валидация модели
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var enclosureExists = await _enclosureRepository.ExistsAsync(request.EnclosureId);
-        if (!enclosureExists)
-            return BadRequest("Specified enclosure does not exist");
-
-        if (!Enum.TryParse<Gender>(request.Gender, out var gender))
+        try
         {
-            return BadRequest("Invalid gender value");
+            await _animalTransferService.AddAnimalAsync(request.Species, request.Name, request.BirthDate, request.Gender, request.FavoriteFood, request.EnclosureId);
+            return Ok("Animal successfully added");
         }
-
-        if (!Enum.TryParse<Food>(request.FavoriteFood, out var food))
+        catch (ArgumentException ex)
         {
-            return BadRequest("Invalid favorite food value");
+            return BadRequest(ex.Message); // ошибки от фабрики (enum парсинг)
         }
-        var animal = new Animal(
-            // new AnimalSpecies(request.Species),
-            // new AnimalName(request.Name),
-            request.Species,
-            request.Name,
-            request.BirthDate,
-            gender,
-            food,
-            request.EnclosureId);
-
-        await _animalRepository.AddAsync(animal);
-        return CreatedAtAction(nameof(GetById), new { id = animal.Id }, animal);
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message); // ошибки от сервиса (не найден вольер и т.д.)
+        }
     }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(Guid id)
-    {
-        await _animalRepository.DeleteAsync(id);
-        return NoContent();
-    }
+    // [HttpDelete("{id}")]
+    // public async Task<IActionResult> Delete(Guid id)
+    // {
+    //     await _animalRepository.DeleteAsync(id);
+    //     return NoContent();
+    // }
 }
 
 public class CreateAnimalRequest
