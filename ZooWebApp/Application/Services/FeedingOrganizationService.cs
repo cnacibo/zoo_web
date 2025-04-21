@@ -1,5 +1,4 @@
-using ZooWebApp.Domain.Models;
-using ZooWebApp.Domain.ValueObjects;
+using ZooWebApp.Application.DTO;
 using ZooWebApp.Application.Interfaces;
 
 namespace ZooWebApp.Application.Services;
@@ -45,6 +44,19 @@ public class FeedingOrganizationService : IFeedingOrganizationService
             throw new InvalidOperationException("Feeding schedule not found");
         }
         await _feedingScheduleRepository.DeleteAsync(scheduleId);
+    }
+
+    public async Task<IEnumerable<FeedingScheduleDto>> GetAllFeedingSchedulesAsync()
+    {
+        var schedules = await _feedingScheduleRepository.GetAllAsync();
+        return schedules.Select(s => new FeedingScheduleDto
+        {
+            Id = s.Id,
+            AnimalId = s.AnimalId,
+            FeedingTime = s.FeedingTime,
+            FoodType = s.FoodType.ToString(),
+            IsCompleted = s.IsCompleted
+        });
     }
 
 }

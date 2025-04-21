@@ -1,3 +1,4 @@
+using ZooWebApp.Application.DTO;
 namespace ZooWebApp.Application.Interfaces;
 
 public interface IFeedingOrganizationService
@@ -7,4 +8,6 @@ public interface IFeedingOrganizationService
     Task CompleteFeedingAsync(Guid scheduleId);
 
     Task DeleteFeedingScheduleAsync(Guid scheduleId);
+
+    Task<IEnumerable<FeedingScheduleDto>> GetAllFeedingSchedulesAsync();
 }

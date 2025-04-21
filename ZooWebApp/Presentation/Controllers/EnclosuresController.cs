@@ -9,18 +9,41 @@ using ZooWebApp.Application.Interfaces;
 public class EnclosuresController : ControllerBase
 {
     private readonly IAnimalTransferService _animalTransferService;
-    private readonly IEnclosureRepository _enclosureRepository;
 
-    public EnclosuresController(IAnimalTransferService animalTransferService, IEnclosureRepository enclosureRepository)
+    public EnclosuresController(IAnimalTransferService animalTransferService)
     {
         _animalTransferService = animalTransferService;   
-        _enclosureRepository = enclosureRepository;
     }
+
+
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var enclosures = await _enclosureRepository.GetAllAsync();
+        try
+        {
+            var enclosures = await _animalTransferService.GetAllEnclosuresAsync();
         return Ok(enclosures);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(Guid id)
+    {
+        try
+        {
+            var enclosure = await _animalTransferService.GetEnclosureByIdAsync(id);
+        if (enclosure == null) return NotFound();
+        return Ok(enclosure);
+        }
+        catch (Exception ex){
+            return BadRequest(ex.Message);
+        }
+        
     }
 
     [HttpPost]
@@ -31,8 +54,8 @@ public class EnclosuresController : ControllerBase
 
         try
         {
-            await _animalTransferService.AddEnclosureAsync(request.Type, request.Size, request.MaxAnimals);
-            return Ok("Enclosure successfully created");
+            var id = await _animalTransferService.AddEnclosureAsync(request.Type, request.Size, request.MaxAnimals);
+            return Ok(new{Message = "Enclosure successfully created", Id = id});
         }
         catch (Exception ex)
         {

@@ -8,28 +8,43 @@ namespace ZooWebApp.Presentation.Controllers;
 public class AnimalsController : ControllerBase
 {
     private readonly IAnimalTransferService _animalTransferService;
-    private readonly IAnimalRepository _animalRepository;
     
-    public AnimalsController(IAnimalTransferService animalTransferService, IAnimalRepository animalRepository)
+    public AnimalsController(IAnimalTransferService animalTransferService)
     {
         _animalTransferService = animalTransferService;
-         _animalRepository = animalRepository;
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var animals = await _animalRepository.GetAllAsync();
-        return Ok(animals);
+        try
+        {
+            var animals = await _animalTransferService.GetAllAnimalsAsync();
+            return Ok(animals);
+        }
+        catch (Exception ex) 
+        {
+            return BadRequest(ex.Message);
+        }
+        
     }
 
-    // [HttpGet("{id}")]
-    // public async Task<IActionResult> GetById(Guid id)
-    // {
-    //     var animal = await _animalRepository.GetByIdAsync(id);
-    //     if (animal == null) return NotFound();
-    //     return Ok(animal);
-    // }
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(Guid id)
+    {
+        try
+        {
+            var animal = await _animalTransferService.GetAnimalByIdAsync(id);
+            if (animal == null) return NotFound();
+            return Ok(animal);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    
+    }
+
 
     [HttpPost]
     public async Task<IActionResult> Create([FromForm] CreateAnimalRequest request)
@@ -39,8 +54,8 @@ public class AnimalsController : ControllerBase
 
         try
         {
-            await _animalTransferService.AddAnimalAsync(request.Species, request.Name, request.BirthDate, request.Gender, request.FavoriteFood, request.EnclosureId);
-            return Ok("Animal successfully added");
+            var id = await _animalTransferService.AddAnimalAsync(request.Species, request.Name, request.BirthDate, request.Gender, request.FavoriteFood, request.EnclosureId);
+            return Ok(new{Message = "Animal successfully added", Id = id});
         }
         catch (Exception ex)
         {

@@ -1,4 +1,5 @@
 using Microsoft.VisualBasic;
+using ZooWebApp.Application.DTO;
 using ZooWebApp.Application.Interfaces;
 namespace ZooWebApp.Application.Services;
 public class AnimalTransferService : IAnimalTransferService
@@ -17,7 +18,42 @@ public class AnimalTransferService : IAnimalTransferService
         _enclosureFactory = enclosureFactory;
     }
 
-    public async Task AddAnimalAsync(string species, string name, DateTime birthDate, 
+    public async Task<IEnumerable<AnimalDto>> GetAllAnimalsAsync()
+    {
+        var animals = await _animalRepository.GetAllAsync();
+        return animals.Select(a => new AnimalDto
+        {
+            Id = a.Id,
+            Species = a.Species.ToString(),
+            Name = a.Name,
+            BirthDate = a.BirthDate,
+            Gender = a.Gender.ToString(),
+            FavoriteFood = a.FavoriteFood.ToString(),
+            IsHealthy = a.IsHealthy,
+            EnclosureId = a.EnclosureId,
+        });
+
+    }
+
+    public async Task<AnimalDto> GetAnimalByIdAsync(Guid id)
+    {
+        var animal = await _animalRepository.GetByIdAsync(id);
+        if (animal == null) return null;
+        
+        return new AnimalDto
+        {
+            Id = animal.Id,
+            Species = animal.Species.ToString(),
+            Name = animal.Name,
+            BirthDate = animal.BirthDate,
+            Gender = animal.Gender.ToString(),
+            FavoriteFood = animal.FavoriteFood.ToString(),
+            IsHealthy = animal.IsHealthy,
+            EnclosureId = animal.EnclosureId
+        };
+    }
+
+    public async Task<Guid> AddAnimalAsync(string species, string name, DateTime birthDate, 
         string gender, string favoriteFood, Guid enclosureId)
     {
 
@@ -30,6 +66,7 @@ public class AnimalTransferService : IAnimalTransferService
         enclosure.AddAnimal(animal.Id);
         await _animalRepository.AddAsync(animal);
         await _enclosureRepository.UpdateAsync(enclosure);
+        return animal.Id;
     }
 
     public async Task RemoveAnimalAsync(Guid animalId)
@@ -77,15 +114,47 @@ public class AnimalTransferService : IAnimalTransferService
 
         // _eventRepository.Publish(new AnimalMovedEvent(animalId, oldEnclosure.Id, newEnclosure.Id));
     }
-    public async Task AddEnclosureAsync(string type, string size, int maxAnimals)
+    public async Task<Guid> AddEnclosureAsync(string type, string size, int maxAnimals)
     {
         var enclosure = _enclosureFactory.Create(type, size, maxAnimals);
         await _enclosureRepository.AddAsync(enclosure);
+        return enclosure.Id;
     }
 
     public async Task RemoveEnclosureAsync(Guid id)
     {
         await _enclosureRepository.DeleteAsync(id);
+    }
+
+    public async Task<IEnumerable<EnclosureDto>> GetAllEnclosuresAsync()
+    {
+        var enclosure = await _enclosureRepository.GetAllAsync();
+        return enclosure.Select(e => new EnclosureDto
+        {
+            Id = e.Id,
+            Type = e.Type.ToString(),
+            Size = e.Size,
+            CurrentAnimals = e.CurrentAnimals,
+            MaxAnimals = e.MaxAnimals,
+            Animals = e.Animals,
+        });
+
+    }
+
+    public async Task<EnclosureDto> GetEnclosureByIdAsync(Guid id)
+    {
+        var enclosure = await _enclosureRepository.GetByIdAsync(id);
+        if (enclosure == null) return null;
+        
+        return new EnclosureDto
+        {
+            Id = enclosure.Id,
+            Type = enclosure.Type.ToString(),
+            Size = enclosure.Size,
+            CurrentAnimals = enclosure.CurrentAnimals,
+            MaxAnimals = enclosure.MaxAnimals,
+            Animals = enclosure.Animals,
+        };
     }
 
 }

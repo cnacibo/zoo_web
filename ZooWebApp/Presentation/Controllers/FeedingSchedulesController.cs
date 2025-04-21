@@ -7,21 +7,26 @@ namespace ZooWebApp.Presentation.Controllers;
 [Route("api/[controller]")]
 public class FeedingSchedulesController : ControllerBase
 {
-    private readonly IFeedingScheduleRepository _feedingScheduleRepository;
     private readonly IFeedingOrganizationService _feedingService;
 
-    public FeedingSchedulesController(IFeedingScheduleRepository feedingScheduleRepository,
-    IFeedingOrganizationService feedingOrganizationService)
+    public FeedingSchedulesController(IFeedingOrganizationService feedingOrganizationService)
     {
-        _feedingScheduleRepository = feedingScheduleRepository;
         _feedingService = feedingOrganizationService;
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var schedules = await _feedingScheduleRepository.GetAllAsync();
-        return Ok(schedules);
+        try
+        {
+            var schedules = await _feedingService.GetAllFeedingSchedulesAsync();
+            return Ok(schedules);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    
     }
 
     [HttpPost]
@@ -33,7 +38,7 @@ public class FeedingSchedulesController : ControllerBase
         try
         {
             var id = await _feedingService.CreateFeedingScheduleAsync(request.AnimalId, request.FeedingTime, request.FoodType);
-            return Ok(new { Id = id });
+            return Ok(new {Message = "Feeding Schedule successfully updated", Id = id });
         }
         catch (Exception ex)
         {
