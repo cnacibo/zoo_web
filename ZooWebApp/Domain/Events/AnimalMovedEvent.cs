@@ -1,11 +1,14 @@
-using ZooWebApp.Domain.Models;
 namespace ZooWebApp.Domain.Events;
 public class AnimalMovedEvent : IDomainEvent
 {
-    public Animal Animal { get; }
+    public Guid AnimalId { get; }
+    public Guid CurrentEnclosureId { get;}
+    public Guid NewEnclosureId { get;}
 
-    public AnimalMovedEvent(Animal animal)
+    public AnimalMovedEvent(Guid animal, Guid currentEnclosureId, Guid newEnclosureId)
     {
-        Animal = animal;
+        AnimalId = animal;
+        CurrentEnclosureId = currentEnclosureId;
+        NewEnclosureId = newEnclosureId;
     }
 }

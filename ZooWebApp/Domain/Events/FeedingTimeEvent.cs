@@ -1,11 +1,14 @@
-using ZooWebApp.Domain.Models;
 namespace ZooWebApp.Domain.Events;
 public class FeedingTimeEvent : IDomainEvent
 {
-    public FeedingSchedule FeedingSchedule { get; }
+    public Guid FeedingScheduleId { get;}
+    public Guid AnimalId { get;}
+    public DateTime FeedingTime { get; }
 
-    public FeedingTimeEvent(FeedingSchedule feedingSchedule)
+    public FeedingTimeEvent(Guid feedingScheduleId, Guid animalId, DateTime feedingTime)
     {
-        FeedingSchedule = feedingSchedule;
+        FeedingScheduleId = feedingScheduleId;
+        AnimalId = animalId;
+        FeedingTime = feedingTime;
     }
 }

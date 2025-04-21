@@ -7,14 +7,15 @@ public class FeedingOrganizationService : IFeedingOrganizationService
     private readonly IFeedingScheduleRepository _feedingScheduleRepository;
     private readonly IFeedingScheduleFactory _feedingScheduleFactory;
     private readonly IAnimalRepository  _animalRepository; 
-    // private readonly IEventRepository _eventRepository;
+    private readonly IEventRepository _eventRepository;
 
     public FeedingOrganizationService(IFeedingScheduleRepository feedingScheduleRepository, 
-    IFeedingScheduleFactory feedingScheduleFactory, IAnimalRepository animalRepository)
+    IFeedingScheduleFactory feedingScheduleFactory, IAnimalRepository animalRepository, IEventRepository eventRepository)
     {
         _feedingScheduleRepository = feedingScheduleRepository;
         _feedingScheduleFactory = feedingScheduleFactory;
         _animalRepository = animalRepository;
+        _eventRepository = eventRepository;
     }
 
     public async Task<Guid> CreateFeedingScheduleAsync(Guid animalId, DateTime feedingTime, string food)

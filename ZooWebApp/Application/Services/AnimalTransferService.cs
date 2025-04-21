@@ -1,5 +1,6 @@
 using Microsoft.VisualBasic;
 using ZooWebApp.Application.DTO;
+using ZooWebApp.Domain.Events;
 using ZooWebApp.Application.Interfaces;
 namespace ZooWebApp.Application.Services;
 public class AnimalTransferService : IAnimalTransferService
@@ -8,14 +9,16 @@ public class AnimalTransferService : IAnimalTransferService
     private readonly IEnclosureRepository _enclosureRepository;
     private readonly IAnimalFactory _animalFactory;
     private readonly IEnclosureFactory _enclosureFactory;
+    private readonly IEventRepository _eventRepository;
 
     public AnimalTransferService(IAnimalRepository animalRepository, IEnclosureRepository enclosureRepository, 
-    IAnimalFactory animalFactory, IEnclosureFactory enclosureFactory)
+    IAnimalFactory animalFactory, IEnclosureFactory enclosureFactory, IEventRepository eventRepository)
     {
         _animalRepository = animalRepository;
         _enclosureRepository = enclosureRepository;
         _animalFactory = animalFactory;
         _enclosureFactory = enclosureFactory;
+        _eventRepository = eventRepository;
     }
 
     public async Task<IEnumerable<AnimalDto>> GetAllAnimalsAsync()
@@ -112,7 +115,7 @@ public class AnimalTransferService : IAnimalTransferService
         await _enclosureRepository.UpdateAsync(newEnclosure);
         await _enclosureRepository.UpdateAsync(currentEnclosure);
 
-        // _eventRepository.Publish(new AnimalMovedEvent(animalId, oldEnclosure.Id, newEnclosure.Id));
+        _eventRepository.Publish(new AnimalMovedEvent(animalId, currentEnclosure.Id, newEnclosure.Id));
     }
     public async Task<Guid> AddEnclosureAsync(string type, string size, int maxAnimals)
     {
