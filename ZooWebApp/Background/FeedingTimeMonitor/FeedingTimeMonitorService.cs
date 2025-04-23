@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Hosting;
 using ZooWebApp.Application.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using ZooWebApp.Domain.Events;
 
 namespace ZooWebApp.Background.FeedingTimeMonitor;
@@ -32,7 +31,7 @@ public class FeedingTimeMonitorService : BackgroundService
             foreach (var schedule in dueSchedules)
             {
         
-                eventRepo.Publish(new FeedingTimeEvent(schedule.Id, schedule.AnimalId, schedule.FeedingTime));
+                await eventRepo.Publish(new FeedingTimeEvent(schedule.Id, schedule.AnimalId, schedule.FeedingTime));
 
             
                 schedule.MarkAsCompleted();

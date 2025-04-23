@@ -59,7 +59,7 @@ public class AnimalsController : ControllerBase
         }
         catch (Exception ex)
         {
-            return BadRequest(ex.Message); // ошибки 
+            return BadRequest(ex.Message); 
         }
     
     }
@@ -77,7 +77,7 @@ public class AnimalsController : ControllerBase
         }
         catch (Exception ex)
         {
-            return BadRequest(ex.Message); // не найдено животное или вольер
+            return BadRequest(ex.Message); 
         }
     }
 
@@ -87,11 +87,11 @@ public class AnimalsController : ControllerBase
         try
         {
             await _animalTransferService.RemoveAnimalAsync(id);
-            return NoContent(); // успешно
+            return NoContent();
         }
         catch (Exception ex)
         {
-            return NotFound(ex.Message); // если животное или вольер не найдены
+            return NotFound(ex.Message); 
         }
     }
 }

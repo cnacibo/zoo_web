@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using ZooWebApp.Application.Interfaces;
+using ZooWebApp.Application.Events;
 using ZooWebApp.Application.Services;
 using ZooWebApp.Infrastructure.Repositories;
+using ZooWebApp.Domain.Events;
 using ZooWebApp.Background.FeedingTimeMonitor;
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +14,11 @@ builder.Services.AddSingleton<IAnimalRepository, InMemoryAnimalRepository>();
 builder.Services.AddSingleton<IEnclosureRepository, InMemoryEnclosureRepository>();
 builder.Services.AddSingleton<IFeedingScheduleRepository, InMemoryFeedingScheduleRepository>();
 builder.Services.AddSingleton<IEventRepository, InMemoryEventRepository>();
+
+// Register EventHandlers
+builder.Services.AddTransient<IEventHandler<AnimalMovedEvent>, AnimalMovedEventHandler>();
+builder.Services.AddTransient<IEventHandler<FeedingTimeEvent>, FeedingTimeEventHandler>();
+
 
 // Register services
 builder.Services.AddScoped<IAnimalTransferService, AnimalTransferService>();
@@ -29,7 +36,6 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

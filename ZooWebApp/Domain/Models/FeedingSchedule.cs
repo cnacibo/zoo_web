@@ -26,6 +26,5 @@ public class FeedingSchedule
     public void MarkAsCompleted()
     {
         IsCompleted = true;
-        // DomainEvents.Raise(new FeedingTimeEvent(this));
     }
 }

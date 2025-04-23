@@ -1,5 +1,6 @@
+using ZooWebApp.Domain.Events;
 namespace ZooWebApp.Application.Interfaces;
 public interface IEventRepository
 {
-    void Publish<TEvent>(TEvent @event) where TEvent : class;
+    Task Publish<TEvent>(TEvent @event) where TEvent : IDomainEvent;
 }

@@ -32,7 +32,6 @@ public class InMemoryEnclosureRepository : IEnclosureRepository{
 
     public Task<bool> ExistsAsync(Guid enclosureId)
     {
-        // Реализация проверки существования
         return Task.FromResult(_enclosures.Any(e => e.Id == enclosureId));
     }
 }

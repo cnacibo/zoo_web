@@ -26,8 +26,7 @@ public class Animal
 
     public void Feed()
     {
-        // Логика кормления
-        IsHealthy = true;
+        IsHealthy = true; // логика кормления
     }
 
     public void Treat()
@@ -38,6 +37,5 @@ public class Animal
     public void MoveToEnclosure(Guid enclosureId)
     {
         EnclosureId = enclosureId;
-        // DomainEvents.Raise(new AnimalMovedEvent(this));
     }
 }

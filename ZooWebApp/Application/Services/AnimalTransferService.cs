@@ -1,4 +1,3 @@
-using Microsoft.VisualBasic;
 using ZooWebApp.Application.DTO;
 using ZooWebApp.Domain.Events;
 using ZooWebApp.Application.Interfaces;
